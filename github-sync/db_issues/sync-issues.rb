@@ -157,6 +157,27 @@ def getLatestIssueComments(context, issue_db, org, repos)
   end
 end
 
+def getLatestPRReviews(context, issue_db, org, repos)
+  repos.each do |repo_obj|
+    begin
+      issue_db.transaction do
+        # Get the current max timestamp in the db
+        maxTimestamp=db_getMaxCommentTimestampForRepo(issue_db, org, repo_obj.name)
+        if(maxTimestamp)
+          # Increment the timestamp by a second to avoid getting repeats
+          ts=DateTime.strptime(maxTimestamp, '%Y-%m-%dT%H:%M:%S') + Rational(1, 60 * 60 * 24)
+          comments=context.client.pull_requests_comments(repo_obj.full_name, { 'since' => ts } )
+        else
+          comments=context.client.pull_requests_comments(repo_obj.full_name)
+        end
+        db_insert_pr_reviews(issue_db, comments, org, repo_obj.name)
+      end
+      context.feedback.print '.'
+    end
+  end
+end
+
+
 def sync_issue_comments(context, sync_db)
 
   owners = context.dashboard_config['organizations+logins']
@@ -167,6 +188,20 @@ def sync_issue_comments(context, sync_db)
 
     context.feedback.print "  #{org} "
     getLatestIssueComments(context, sync_db, org, repos)
+    context.feedback.print "\n"
+  end
+
+end
+
+def sync_pr_reviews(context, sync_db)
+  owners = context.dashboard_config['organizations+logins']
+  context.feedback.puts " pull-request-reviews"
+
+  owners.each do |org|
+    repos=context.repositories(org)
+
+    context.feedback.print "  #{org} "
+    getLatestPRReviews(context, sync_db, org, repos)
     context.feedback.print "\n"
   end
 

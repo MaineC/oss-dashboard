@@ -69,6 +69,10 @@ def github_sync(context, run_one)
     # TODO: Move to being based on the async code
     sync_issue_comments(context, sync_db)
   end
+  if(not(run_one) or run_one=='github-sync/pr-reviews')
+    # TODO: Implement async code
+    sync_pr_reviews(context, sync_db)
+  end
   if(not(run_one) or run_one=='github-sync/releases')
     # TODO: Move to being based on the async code
     sync_releases(context, sync_db)

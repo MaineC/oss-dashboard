@@ -29,8 +29,8 @@ require 'optparse'
 
   def xml2html(context, xmlFiles, xsltFile, outputDirectory)
     Dir.glob(xmlFiles).each do |inputFile|
-      stylesheet = LibXSLT::XSLT::Stylesheet.new( LibXML::XML::Document.file(xsltFile))
       xml_doc = LibXML::XML::Document.file(inputFile)
+      stylesheet = LibXSLT::XSLT::Stylesheet.new( LibXML::XML::Document.file(xsltFile))
       html = stylesheet.apply(xml_doc)
 
       outputFile=File.basename(inputFile, ".xml")
@@ -136,7 +136,7 @@ end
 
 # TODO: Implement github-sync and generate-dashboard as aliases?
 allPhases=['init-database', 'github-sync', 'pull-source', 'review-source', 'generate-dashboard']
-legitPhases=['init-database', 'github-sync/metadata', 'github-sync/commits', 'github-sync/events', 'github-sync/issues', 'github-sync/issue-comments', 'github-sync/releases', 'github-sync/traffic', 'github-sync/user-mapping', 'github-sync/reporting', 'pull-source', 'review-source', 'generate-dashboard/xml', 'generate-dashboard/json-data', 'generate-dashboard/dashboards', 'generate-dashboard/xslt', 'github-sync', 'generate-dashboard']
+legitPhases=['init-database', 'github-sync/metadata', 'github-sync/commits', 'github-sync/events', 'github-sync/issues', 'github-sync/issue-comments', 'github-sync/pr-reviews', 'github-sync/releases', 'github-sync/traffic', 'github-sync/user-mapping', 'github-sync/reporting', 'pull-source', 'review-source', 'generate-dashboard/xml', 'generate-dashboard/json-data', 'generate-dashboard/dashboards', 'generate-dashboard/xslt', 'github-sync', 'generate-dashboard']
 
 if(ARGV[1])
   run_list=ARGV[1..-1]
