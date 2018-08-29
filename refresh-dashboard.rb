@@ -29,8 +29,8 @@ require 'optparse'
 
   def xml2html(context, xmlFiles, xsltFile, outputDirectory)
     Dir.glob(xmlFiles).each do |inputFile|
-      xml_doc = LibXML::XML::Document.file(inputFile)
       stylesheet = LibXSLT::XSLT::Stylesheet.new( LibXML::XML::Document.file(xsltFile))
+      xml_doc = LibXML::XML::Document.file(inputFile)
       html = stylesheet.apply(xml_doc)
 
       outputFile=File.basename(inputFile, ".xml")
